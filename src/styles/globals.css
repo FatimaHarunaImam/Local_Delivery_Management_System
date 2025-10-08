@@ -1,0 +1,258 @@
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  --font-size: 14px;
+  --background: #ffffff;
+  --foreground: #2d1b0e;
+  --card: #ffffff;
+  --card-foreground: #2d1b0e;
+  --popover: #ffffff;
+  --popover-foreground: #2d1b0e;
+  --primary: #2d1b0e;
+  --primary-foreground: #ffffff;
+  --secondary: #fef7f0;
+  --secondary-foreground: #2d1b0e;
+  --muted: #f5f1eb;
+  --muted-foreground: #5d4037;
+  --accent: #ff8c00;
+  --accent-foreground: #ffffff;
+  --destructive: #ef4444;
+  --destructive-foreground: #ffffff;
+  --border: #e5ddd5;
+  --input: transparent;
+  --input-background: #fef7f0;
+  --switch-background: #d1d5db;
+  --font-weight-medium: 500;
+  --font-weight-normal: 400;
+  --ring: #2d1b0e;
+  --chart-1: #2d1b0e;
+  --chart-2: #ff8c00;
+  --chart-3: #90ee90;
+  --chart-4: #dda0dd;
+  --chart-5: #f59e0b;
+  --radius: 0.75rem;
+  --jetdash-brown: #2d1b0e;
+  --jetdash-deep-brown: #1a0f08;
+  --jetdash-orange: #ff8c00;
+  --jetdash-light-orange: #ffb347;
+  --jetdash-green: #90ee90;
+  --jetdash-light-green: #e6ffe6;
+  --jetdash-lilac: #dda0dd;
+  --jetdash-light-lilac: #f0e6f0;
+  --sidebar: #fef7f0;
+  --sidebar-foreground: #2d1b0e;
+  --sidebar-primary: #2d1b0e;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #f5f1eb;
+  --sidebar-accent-foreground: #2d1b0e;
+  --sidebar-border: #e5ddd5;
+  --sidebar-ring: #2d1b0e;
+}
+
+.dark {
+  --background: #1a0f08;
+  --foreground: #ffffff;
+  --card: #2d1b0e;
+  --card-foreground: #ffffff;
+  --popover: #2d1b0e;
+  --popover-foreground: #ffffff;
+  --primary: #ff8c00;
+  --primary-foreground: #ffffff;
+  --secondary: #3e2723;
+  --secondary-foreground: #ffffff;
+  --muted: #3e2723;
+  --muted-foreground: #bcaaa4;
+  --accent: #ff8c00;
+  --accent-foreground: #ffffff;
+  --destructive: #ef4444;
+  --destructive-foreground: #ffffff;
+  --border: #3e2723;
+  --input: #3e2723;
+  --ring: #ff8c00;
+  --sidebar: #2d1b0e;
+  --sidebar-foreground: #ffffff;
+  --sidebar-primary: #ff8c00;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #3e2723;
+  --sidebar-accent-foreground: #ffffff;
+  --sidebar-border: #3e2723;
+  --sidebar-ring: #ff8c00;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-input-background: var(--input-background);
+  --color-switch-background: var(--switch-background);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-jetdash-brown: var(--jetdash-brown);
+  --color-jetdash-deep-brown: var(--jetdash-deep-brown);
+  --color-jetdash-orange: var(--jetdash-orange);
+  --color-jetdash-light-orange: var(--jetdash-light-orange);
+  --color-jetdash-green: var(--jetdash-green);
+  --color-jetdash-light-green: var(--jetdash-light-green);
+  --color-jetdash-lilac: var(--jetdash-lilac);
+  --color-jetdash-light-lilac: var(--jetdash-light-lilac);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+/**
+ * Base typography. This is not applied to elements which have an ancestor with a Tailwind text class.
+ */
+@layer base {
+  :where(:not(:has([class*=" text-"]), :not(:has([class^="text-"])))) {
+    h1 {
+      font-size: var(--text-2xl);
+      font-weight: var(--font-weight-medium);
+      line-height: 1.5;
+    }
+
+    h2 {
+      font-size: var(--text-xl);
+      font-weight: var(--font-weight-medium);
+      line-height: 1.5;
+    }
+
+    h3 {
+      font-size: var(--text-lg);
+      font-weight: var(--font-weight-medium);
+      line-height: 1.5;
+    }
+
+    h4 {
+      font-size: var(--text-base);
+      font-weight: var(--font-weight-medium);
+      line-height: 1.5;
+    }
+
+    p {
+      font-size: var(--text-base);
+      font-weight: var(--font-weight-normal);
+      line-height: 1.5;
+    }
+
+    label {
+      font-size: var(--text-base);
+      font-weight: var(--font-weight-medium);
+      line-height: 1.5;
+    }
+
+    button {
+      font-size: var(--text-base);
+      font-weight: var(--font-weight-medium);
+      line-height: 1.5;
+    }
+
+    input {
+      font-size: var(--text-base);
+      font-weight: var(--font-weight-normal);
+      line-height: 1.5;
+    }
+  }
+}
+
+html {
+  font-size: var(--font-size);
+  height: 100%;
+}
+
+body {
+  min-height: 100vh;
+  height: 100%;
+}
+
+#root {
+  min-height: 100vh;
+  height: 100%;
+}
+
+/* Custom JetDash utilities */
+.jetdash-brown {
+  background-color: var(--jetdash-brown);
+}
+
+.jetdash-deep-brown {
+  background-color: var(--jetdash-deep-brown);
+}
+
+.jetdash-orange {
+  background-color: var(--jetdash-orange);
+}
+
+.jetdash-green {
+  background-color: var(--jetdash-green);
+}
+
+.jetdash-lilac {
+  background-color: var(--jetdash-lilac);
+}
+
+.text-jetdash-brown {
+  color: var(--jetdash-brown);
+}
+
+.text-jetdash-deep-brown {
+  color: var(--jetdash-deep-brown);
+}
+
+.text-jetdash-orange {
+  color: var(--jetdash-orange);
+}
+
+.text-jetdash-green {
+  color: var(--jetdash-green);
+}
+
+.text-jetdash-lilac {
+  color: var(--jetdash-lilac);
+}
+
+.border-jetdash-orange {
+  border-color: var(--jetdash-orange);
+}
+
+.shadow-jetdash {
+  box-shadow: 0 4px 20px rgba(45, 27, 14, 0.1);
+}
