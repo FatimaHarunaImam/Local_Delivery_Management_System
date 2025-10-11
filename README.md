@@ -1,8 +1,7 @@
 
   # JetDash
 
-  This is a code bundle for JetDash. The original project is available at https://www.figma.com/design/T1JunL6D747bkmQdqVH2nZ/JetDash.
-
+  This is a code bundle for JetDash. The original project is available at bit.ly/4h9EaGH
   ## Running the code
 
   Run `npm i` to install the dependencies.
