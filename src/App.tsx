@@ -20,6 +20,7 @@ import { SMECreateMultipleDelivery } from './components/SMECreateMultipleDeliver
 import { MenuScreen } from './components/MenuScreen';
 import { ProfileScreen } from './components/ProfileScreen';
 import { AuthDebug } from './components/AuthDebug';
+import { DeploymentCheck } from './components/DeploymentCheck';
 import { supabase, apiCall } from './utils/supabase/client';
 import { localAuth, localApiCall } from './utils/localStorage/client';
 
@@ -44,7 +45,8 @@ type Screen =
   | 'sme-create-multiple-delivery'
   | 'menu'
   | 'profile'
-  | 'auth-debug';
+  | 'auth-debug'
+  | 'deployment-check';
 
 type UserType = 'customer' | 'rider' | 'sme' | null;
 
@@ -78,6 +80,15 @@ export default function App() {
 
   // Check for existing session on app load
   useEffect(() => {
+    // Check for screen parameter in URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const screenParam = urlParams.get('screen');
+    if (screenParam === 'deployment-check') {
+      setCurrentScreen('deployment-check');
+      setIsLoading(false);
+      return;
+    }
+    
     checkSession();
     
     // Start real-time simulation for the app
@@ -490,9 +501,12 @@ export default function App() {
 
       case 'auth-debug':
         return <AuthDebug />;
+
+      case 'deployment-check':
+        return <DeploymentCheck />;
         
       default:
-        return <LandingPage onGetStarted={handleGetStarted} />;
+        return <LandingPage onGetStarted={handleGetStarted} onLogin={() => setCurrentScreen('login')} />;
     }
   };
 

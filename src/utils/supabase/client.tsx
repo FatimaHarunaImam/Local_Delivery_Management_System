@@ -12,18 +12,21 @@ export const API_BASE = `https://${projectId}.supabase.co/functions/v1/make-serv
 
 // Enhanced API client with robust offline fallback and error handling
 export async function apiCall(endpoint: string, options: RequestInit = {}) {
-  // Always fallback to offline mode immediately to prevent fetch errors
-  console.log(`API call to ${endpoint} - using offline mode for demo`);
-  return await getOfflineFallback(endpoint, options);
+  // Check if we should use offline mode
+  const forceOffline = localStorage.getItem('jetdash_force_offline') === 'true';
+  const isProduction = import.meta.env.MODE === 'production' || import.meta.env.VITE_APP_ENV === 'production';
   
-  // The following code is commented out to prevent fetch errors
-  // Uncomment when Supabase backend is properly configured
+  // In development or when offline mode is forced, use fallback immediately
+  if (!isProduction || forceOffline) {
+    console.log(`API call to ${endpoint} - using offline mode`);
+    return await getOfflineFallback(endpoint, options);
+  }
   
-  /*
+  // In production, try real API first, then fallback
   try {
     // Set a reasonable timeout for API calls
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 2000); // Reduced timeout
+    const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
 
     let session = null;
     try {
@@ -32,12 +35,12 @@ export async function apiCall(endpoint: string, options: RequestInit = {}) {
         session = data.session;
       }
     } catch (sessionErr) {
-      console.log('Session check failed, continuing with offline mode');
+      console.log('Session check failed, continuing without session');
     }
 
-    const headers = {
+    const headers: Record<string, string> = {
       'Content-Type': 'application/json',
-      ...options.headers,
+      ...(options.headers as Record<string, string>),
     };
 
     // Check if this is a public endpoint
@@ -54,6 +57,7 @@ export async function apiCall(endpoint: string, options: RequestInit = {}) {
       headers['Authorization'] = `Bearer ${publicAnonKey}`;
     }
 
+    console.log(`Attempting API call to: ${API_BASE}${endpoint}`);
     const response = await fetch(`${API_BASE}${endpoint}`, {
       ...options,
       headers,
@@ -68,15 +72,19 @@ export async function apiCall(endpoint: string, options: RequestInit = {}) {
     }
 
     const result = await response.json();
-    console.log(`API call to ${endpoint} succeeded`);
+    console.log(`✓ API call to ${endpoint} succeeded`);
     return result;
   } catch (error: any) {
-    console.log(`API call failed (${error.message}), using offline fallback for:`, endpoint);
+    // Check if it's a network error or timeout
+    if (error.name === 'AbortError') {
+      console.log(`API call timeout for ${endpoint}, using offline fallback`);
+    } else {
+      console.log(`API call failed (${error.message}), using offline fallback for:`, endpoint);
+    }
     
     // Return offline fallback instead of throwing
     return await getOfflineFallback(endpoint, options);
   }
-  */
 }
 
 // Offline fallback system with mock data and localStorage persistence
@@ -502,50 +510,67 @@ const generateMockSMEDeliveries = () => {
   }));
 };
 
-// Enhanced real-time functionality with robust fallback
+// Enhanced real-time functionality with Supabase Realtime and intelligent fallback
 export const simulateRealTimeUpdates = () => {
-  console.log('🔄 Starting real-time updates (offline mode)...');
+  console.log('🔄 Starting real-time updates with Supabase Realtime...');
   
-  // Skip Supabase real-time connection to prevent errors
-  // Focus on local simulation for now
-  let subscription: any = null;
+  let deliveryChannel: any = null;
+  let pollingInterval: any = null;
+  let isRealtimeConnected = false;
   
-  // Comment out Supabase real-time to prevent fetch errors
-  /*
+  // Try to use Supabase Realtime for instant updates
   try {
-    // Subscribe to delivery table changes
-    subscription = supabase
-      .channel('deliveries')
-      .on('postgres_changes', {
-        event: '*',
-        schema: 'public',
-        table: 'deliveries'
-      }, (payload) => {
-        console.log('📡 Real-time update received:', payload);
-        window.dispatchEvent(new CustomEvent('deliveryUpdate', { detail: payload }));
+    // Create a channel for real-time delivery updates
+    deliveryChannel = supabase.channel('delivery-changes', {
+      config: {
+        broadcast: { self: true },
+        presence: { key: '' },
+      },
+    });
+
+    // Subscribe to broadcast messages for new deliveries
+    deliveryChannel
+      .on('broadcast', { event: 'delivery-created' }, (payload: any) => {
+        console.log('📡 Real-time: New delivery created!', payload);
+        window.dispatchEvent(new CustomEvent('deliveryUpdate', { detail: payload.payload }));
+        window.dispatchEvent(new CustomEvent('newDeliveryRequest', { detail: payload.payload }));
+      })
+      .on('broadcast', { event: 'delivery-updated' }, (payload: any) => {
+        console.log('📡 Real-time: Delivery updated!', payload);
+        window.dispatchEvent(new CustomEvent('deliveryUpdate', { detail: payload.payload }));
+      })
+      .on('broadcast', { event: 'delivery-accepted' }, (payload: any) => {
+        console.log('📡 Real-time: Delivery accepted!', payload);
+        window.dispatchEvent(new CustomEvent('deliveryUpdate', { detail: payload.payload }));
       })
       .subscribe((status) => {
-        console.log('📡 Supabase real-time status:', status);
+        console.log('📡 Supabase Realtime status:', status);
+        if (status === 'SUBSCRIBED') {
+          isRealtimeConnected = true;
+          console.log('✅ Real-time updates ENABLED - deliveries will sync instantly!');
+        } else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
+          console.log('⚠️ Real-time connection issue, using polling fallback');
+          isRealtimeConnected = false;
+        }
       });
-
-    // Also subscribe to rider status changes
-    const riderSubscription = supabase
-      .channel('rider_status')
-      .on('postgres_changes', {
-        event: '*',
-        schema: 'public',
-        table: 'riders'
-      }, (payload) => {
-        console.log('📡 Rider status update:', payload);
-        window.dispatchEvent(new CustomEvent('riderStatusUpdate', { detail: payload }));
-      })
-      .subscribe();
   } catch (error) {
-    console.log('📡 Supabase real-time not available, using fallback:', error);
+    console.log('📡 Supabase real-time not available, using polling fallback:', error);
+    isRealtimeConnected = false;
   }
-  */
   
-  // Enhanced simulation with more frequent updates for better responsiveness
+  // Polling fallback: Check for updates every 3 seconds
+  // This ensures updates work even if Realtime is unavailable
+  pollingInterval = setInterval(() => {
+    // If realtime is working well, reduce polling frequency
+    const pollingDelay = isRealtimeConnected ? 10000 : 3000;
+    
+    if (Date.now() % pollingDelay < 1000) {
+      // Trigger a refresh event for components to fetch latest data
+      window.dispatchEvent(new CustomEvent('pollingUpdate', { detail: { timestamp: Date.now() } }));
+    }
+  }, 1000);
+  
+  // Also maintain the simulation for demo/offline mode
   const updateInterval = setInterval(() => {
     // Update active deliveries status with more realistic progression
     const deliveries = JSON.parse(localStorage.getItem('allDeliveries') || '[]');
@@ -612,8 +637,12 @@ export const simulateRealTimeUpdates = () => {
   return () => {
     try {
       clearInterval(updateInterval);
-      if (subscription) {
-        subscription.unsubscribe();
+      if (pollingInterval) {
+        clearInterval(pollingInterval);
+      }
+      if (deliveryChannel) {
+        deliveryChannel.unsubscribe();
+        console.log('📡 Unsubscribed from real-time updates');
       }
     } catch (cleanupError) {
       console.log('Cleanup error (safe to ignore):', cleanupError);

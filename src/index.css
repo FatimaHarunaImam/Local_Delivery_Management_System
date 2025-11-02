@@ -93,6 +93,8 @@
     --color-amber-500: oklch(.769 .188 70.08);
     --color-yellow-100: oklch(.973 .071 103.193);
     --color-yellow-500: oklch(.795 .184 86.047);
+    --color-yellow-600: oklch(.681 .162 75.834);
+    --color-yellow-700: oklch(.554 .135 66.442);
     --color-yellow-800: oklch(.476 .114 61.907);
     --color-green-50: oklch(.982 .018 155.826);
     --color-green-100: oklch(.962 .044 156.743);
@@ -800,10 +802,6 @@
 
   .inline-flex {
     display: inline-flex;
-  }
-
-  .table {
-    display: table;
   }
 
   .field-sizing-content {
@@ -1931,6 +1929,17 @@
     --tw-gradient-stops: var(--tw-gradient-via-stops, var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-to) var(--tw-gradient-to-position));
   }
 
+  .from-\[var\(--jetdash-brown\)\]\/10 {
+    --tw-gradient-from: var(--jetdash-brown);
+    --tw-gradient-stops: var(--tw-gradient-via-stops, var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-to) var(--tw-gradient-to-position));
+  }
+
+  @supports (color: color-mix(in lab, red, red)) {
+    .from-\[var\(--jetdash-brown\)\]\/10 {
+      --tw-gradient-from: color-mix(in oklab, var(--jetdash-brown) 10%, transparent);
+    }
+  }
+
   .from-\[var\(--jetdash-deep-brown\)\] {
     --tw-gradient-from: var(--jetdash-deep-brown);
     --tw-gradient-stops: var(--tw-gradient-via-stops, var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-to) var(--tw-gradient-to-position));
@@ -2202,6 +2211,17 @@
     --tw-gradient-stops: var(--tw-gradient-via-stops, var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-to) var(--tw-gradient-to-position));
   }
 
+  .to-\[var\(--jetdash-brown\)\]\/5 {
+    --tw-gradient-to: var(--jetdash-brown);
+    --tw-gradient-stops: var(--tw-gradient-via-stops, var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-to) var(--tw-gradient-to-position));
+  }
+
+  @supports (color: color-mix(in lab, red, red)) {
+    .to-\[var\(--jetdash-brown\)\]\/5 {
+      --tw-gradient-to: color-mix(in oklab, var(--jetdash-brown) 5%, transparent);
+    }
+  }
+
   .to-\[var\(--jetdash-brown\)\]\/20 {
     --tw-gradient-to: var(--jetdash-brown);
     --tw-gradient-stops: var(--tw-gradient-via-stops, var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-to) var(--tw-gradient-to-position));
@@ -2325,6 +2345,17 @@
   @supports (color: color-mix(in lab, red, red)) {
     .to-muted\/20 {
       --tw-gradient-to: color-mix(in oklab, var(--muted) 20%, transparent);
+    }
+  }
+
+  .to-muted\/30 {
+    --tw-gradient-to: var(--muted);
+    --tw-gradient-stops: var(--tw-gradient-via-stops, var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-to) var(--tw-gradient-to-position));
+  }
+
+  @supports (color: color-mix(in lab, red, red)) {
+    .to-muted\/30 {
+      --tw-gradient-to: color-mix(in oklab, var(--muted) 30%, transparent);
     }
   }
 
@@ -2555,6 +2586,10 @@
     vertical-align: middle;
   }
 
+  .font-mono {
+    font-family: var(--font-mono);
+  }
+
   .text-2xl {
     font-size: var(--text-2xl);
     line-height: var(--tw-leading, var(--text-2xl--line-height));
@@ -2645,6 +2680,10 @@
     letter-spacing: var(--tracking-widest);
   }
 
+  .break-all {
+    word-break: break-all;
+  }
+
   .whitespace-nowrap {
     white-space: nowrap;
   }
@@ -2729,6 +2768,10 @@
     color: var(--color-green-600);
   }
 
+  .text-green-700 {
+    color: var(--color-green-700);
+  }
+
   .text-green-800 {
     color: var(--color-green-800);
   }
@@ -2781,6 +2824,10 @@
     color: var(--color-red-600);
   }
 
+  .text-red-700 {
+    color: var(--color-red-700);
+  }
+
   .text-red-800 {
     color: var(--color-red-800);
   }
@@ -2797,6 +2844,14 @@
     color: var(--color-yellow-100);
   }
 
+  .text-yellow-600 {
+    color: var(--color-yellow-600);
+  }
+
+  .text-yellow-700 {
+    color: var(--color-yellow-700);
+  }
+
   .text-yellow-800 {
     color: var(--color-yellow-800);
   }
@@ -2807,6 +2862,10 @@
 
   .italic {
     font-style: italic;
+  }
+
+  .underline {
+    text-decoration-line: underline;
   }
 
   .underline-offset-4 {

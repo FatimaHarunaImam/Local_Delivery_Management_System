@@ -185,8 +185,10 @@ app.post("/make-server-aaf007a1/auth/signup", async (c) => {
       email,
       password,
       user_metadata: { name, userType, phone },
-      // Automatically confirm the user's email since an email server hasn't been configured.
-      email_confirm: true
+      // Email verification is now required. Configure SMTP in Supabase Dashboard:
+      // Settings → Authentication → Email → Enable Custom SMTP
+      // See EMAIL_QUICK_START.md for setup instructions
+      email_confirm: false
     });
 
     if (error) {
@@ -538,6 +540,18 @@ app.post("/make-server-aaf007a1/sme/create-delivery", async (c) => {
     await kv.set(`delivery:${deliveryId}`, delivery);
     await kv.set(`sme:${auth.user.id}`, smeData);
 
+    // Broadcast real-time event to all connected clients
+    try {
+      await supabase.channel('delivery-changes').send({
+        type: 'broadcast',
+        event: 'delivery-created',
+        payload: delivery
+      });
+      console.log('📡 Broadcast: New SME delivery created -', deliveryId);
+    } catch (broadcastError) {
+      console.log('Broadcast failed (non-critical):', broadcastError);
+    }
+
     return c.json({
       success: true,
       delivery,
@@ -667,6 +681,18 @@ app.post("/make-server-aaf007a1/delivery/create", async (c) => {
 
     await kv.set(`delivery:${deliveryId}`, delivery);
 
+    // Broadcast real-time event to all connected clients
+    try {
+      await supabase.channel('delivery-changes').send({
+        type: 'broadcast',
+        event: 'delivery-created',
+        payload: delivery
+      });
+      console.log('📡 Broadcast: New delivery created -', deliveryId);
+    } catch (broadcastError) {
+      console.log('Broadcast failed (non-critical):', broadcastError);
+    }
+
     return c.json({
       success: true,
       delivery
@@ -732,6 +758,18 @@ app.post("/make-server-aaf007a1/delivery/:deliveryId/accept", async (c) => {
 
     await kv.set(`delivery:${deliveryId}`, delivery);
 
+    // Broadcast real-time event to all connected clients
+    try {
+      await supabase.channel('delivery-changes').send({
+        type: 'broadcast',
+        event: 'delivery-accepted',
+        payload: delivery
+      });
+      console.log('📡 Broadcast: Delivery accepted -', deliveryId);
+    } catch (broadcastError) {
+      console.log('Broadcast failed (non-critical):', broadcastError);
+    }
+
     return c.json({
       success: true,
       delivery
@@ -766,6 +804,18 @@ app.put("/make-server-aaf007a1/delivery/:deliveryId/status", async (c) => {
     }
 
     await kv.set(`delivery:${deliveryId}`, delivery);
+
+    // Broadcast real-time event to all connected clients
+    try {
+      await supabase.channel('delivery-changes').send({
+        type: 'broadcast',
+        event: 'delivery-updated',
+        payload: delivery
+      });
+      console.log('📡 Broadcast: Delivery status updated -', deliveryId, 'to', status);
+    } catch (broadcastError) {
+      console.log('Broadcast failed (non-critical):', broadcastError);
+    }
 
     return c.json({
       success: true,

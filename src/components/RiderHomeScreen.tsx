@@ -124,29 +124,51 @@ export function RiderHomeScreen({
   useEffect(() => {
     fetchRiderData();
     
-    // Start real-time updates simulation
+    // Start real-time updates with Supabase Realtime
     const { simulateRealTimeUpdates } = require('../utils/supabase/client');
     const cleanup = simulateRealTimeUpdates();
     
-    // Listen for delivery updates
+    // Listen for real-time delivery updates
     const handleDeliveryUpdate = (event: any) => {
-      console.log('Real-time delivery update received');
+      console.log('📡 Real-time delivery update received, refreshing data...');
       fetchRiderData();
     };
     
-    window.addEventListener('deliveryUpdate', handleDeliveryUpdate);
+    const handleNewDelivery = (event: any) => {
+      console.log('📡 New delivery request received!', event.detail);
+      fetchRiderData();
+      // Show notification
+      const notification = document.createElement('div');
+      notification.className = 'fixed top-4 right-4 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg z-50';
+      notification.textContent = '🚀 New delivery request available!';
+      document.body.appendChild(notification);
+      setTimeout(() => notification.remove(), 3000);
+    };
     
-    // Poll for new deliveries every 5 seconds when online
+    const handlePollingUpdate = () => {
+      if (isOnline) {
+        fetchRiderData();
+      }
+    };
+    
+    window.addEventListener('deliveryUpdate', handleDeliveryUpdate);
+    window.addEventListener('newDeliveryRequest', handleNewDelivery);
+    window.addEventListener('pollingUpdate', handlePollingUpdate);
+    
+    // Reduced polling since we have real-time updates now
+    // Only poll every 10 seconds as backup
     const interval = setInterval(() => {
       if (isOnline) {
         fetchRiderData();
       }
-    }, 5000);
+    }, 10000);
     
     return () => {
       clearInterval(interval);
       cleanup();
       window.removeEventListener('deliveryUpdate', handleDeliveryUpdate);
+      window.removeEventListener('newDeliveryRequest', handleNewDelivery);
+      window.removeEventListener('pollingUpdate', handlePollingUpdate);
     };
   }, [isOnline]);
 

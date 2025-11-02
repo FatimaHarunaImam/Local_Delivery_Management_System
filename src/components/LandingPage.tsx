@@ -991,14 +991,28 @@ export function LandingPage({ onGetStarted, onLogin }: LandingPageProps) {
             </div>
 
             {/* Bottom Footer */}
-            <div className="flex flex-col md:flex-row items-center justify-between pt-8 border-t border-white/10">
+            <div className="flex flex-col md:flex-row items-center justify-between pt-8 border-t border-white/10 gap-4">
               <div className="flex items-center space-x-6 mb-4 md:mb-0">
                 <p className="text-gray-400">© 2024 JetDash. All rights reserved.</p>
                 <Badge className="bg-white/10 text-white">
                   Licensed & Insured
                 </Badge>
               </div>
+              
               <div className="flex items-center space-x-4">
+                {/* Deployment Check Link - for admins */}
+                <a 
+                  href="/deployment-check"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    window.location.href = '/?screen=deployment-check';
+                  }}
+                  className="text-xs text-gray-500 hover:text-[var(--jetdash-orange)] transition-colors underline"
+                  title="Check deployment status"
+                >
+                  System Check
+                </a>
+                
                 <div className="flex -space-x-2">
                   <div className="w-8 h-8 bg-[var(--jetdash-orange)] rounded-full border-2 border-white/20"></div>
                   <div className="w-8 h-8 bg-[var(--jetdash-green)] rounded-full border-2 border-white/20"></div>
